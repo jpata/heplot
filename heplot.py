@@ -7,7 +7,7 @@ from rootpy.io.file import root_open
 import sys
 import numpy as np
 import matplotlib.gridspec as gridspec
-
+import math
 from matplotlib.ticker import AutoMinorLocator
 
 matplotlib.rc('font', family='sans-serif') 
@@ -18,6 +18,26 @@ matplotlib.rcParams.update({'font.size': 16})
 def normalize(h):
     if (h.Integral() > 0):
         h.Scale(1.0 / h.Integral())
+
+def round_mult(x):
+    p = int(math.log(x, 10))
+    m = math.pow(10, p)
+    print "pre", p, m, x/m
+    if (x/m < 2):
+        p = p - 1
+        m = math.pow(10, p)
+        print "by 2", p, m, x/m
+    return m, int(math.ceil(x/m)) * m
+
+def set_hist_axes(h, ax):
+    ax.grid(which="major", lw=1, ls="-")
+    ax.grid(which="minor", lw=1, ls="--")
+    ax.grid(which="minor", lw=0, ls="--", axis="x")
+    spacing, top = round_mult(h.GetMaximum())
+    ax.set_yticks(np.arange(0, top+1, spacing))
+    ax.set_yticks(np.arange(0, top+1, spacing/5), minor=True)
+    ax.set_xticks(np.arange(h.GetBinLowEdge(1), h.GetBinLowEdge(h.GetNbinsX()) + h.GetBinWidth(1), h.GetBinWidth(1)), minor=True)
+    ax.set_ylim(bottom=0, top=top)
 
 def as_array(x):
     
