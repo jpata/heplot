@@ -148,3 +148,68 @@ def ratio_axes(fig):
     #ax2.yaxis.set_ticks_position('right')
     #fig.subplots_adjust(hspace=0.2)
     return ax1, ax2
+    
+def grouped_histograms_sameax(grouped, **kwargs):
+    """
+    g = dt.groupby("cl")
+    
+    gs = g.apply(
+        lambda x: np.histogram(
+            x["pt"],
+            bins=np.linspace(20, 400, 11)
+        )
+    )
+    fig = plt.figure(figsize=(10,10))
+    ax = plt.axes()
+    grouped_histograms_sameax(gs, keynames=["b", "c", "udsg"], ax=ax)
+
+    """
+    ks = grouped.keys()
+    keynames = kwargs.get("keynames", [str(k) for k in ks])
+    ax = kwargs.get("ax", None)
+    if ax is None:
+        ax = plt.axes()
+    
+    errors = kwargs.get("errors", None)
+    scaling = kwargs.get("scaling", None)
+    linestyle = kwargs.get("ls", "-")
+    colcycle = ax._get_lines.color_cycle
+    for k, kn in zip(ks, keynames):
+        col = colcycle.next()
+        ys = grouped[k][0]
+        xs = grouped[k][1]
+        
+        if errors is None:
+            es = np.sqrt(ys)
+        elif errors=="histogram":
+            es =  grouped[k][2]
+        elif errors==False:
+            es =  0.0 * ys
+        if scaling is None:
+            I = 1.0
+        elif scaling=="normalize":
+            I = float(np.sum(ys))
+        
+        ys = ys/I
+        es = es/I
+        ys = list(ys)
+        ys.append(ys[-1])
+        es = list(es)
+        es.append(es[-1])
+        xs = list(xs)
+        plt.step(xs, ys, color=col, label=kn,lw=2, where="post", ls=linestyle)
+        xs.append(xs[-1])
+        plt.errorbar(xs[:-1]+np.diff(xs)/2, ys, es, color=col, lw=2, ls="")
+
+def grouped_errorbars(grouped, **kwargs):
+    ks = grouped.keys()
+    ax = kwargs.get("ax", plt.axes())
+    colcycle = ax._get_lines.color_cycle
+    col = colcycle.next()
+    xs = range(len(ks))
+    xnames = kwargs.get("xnames", map(str, ks))
+    ys = [grouped[k][0] for k in ks]
+    es = np.array([grouped[k][1] for k in ks])
+    plt.xticks(xs, xnames)
+    ax.plot(xs, ys, marker="o", color=col, label=kwargs.get("label", ""))
+    ax.fill_between(xs, es[:, 0], es[:, 1], alpha=0.2, color=col, interpolate=True)
