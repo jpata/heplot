@@ -1,9 +1,9 @@
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 import rootpy.plotting.root2matplotlib as rplt
 import matplotlib.pyplot as plt
-from rootpy.plotting import Hist, Hist2D, HistStack
-from rootpy.io.file import root_open
+#from rootpy.plotting import Hist, Hist2D, HistStack
+#from rootpy.io.file import root_open
 import sys
 import numpy as np
 import matplotlib.gridspec as gridspec
@@ -71,8 +71,20 @@ def barhist(h, **kwargs):
     lw = kwargs.pop("lw", 1)
     fs = kwargs.pop("fillstyle", False)
     lab = kwargs.pop("label", "")
+    scaling = kwargs.pop("scaling", 1.0)
+    rebin = kwargs.pop("rebin", 1)
     kwargs_d = dict(kwargs)
     
+    if scaling == "normed":
+        if h.Integral()>0:
+            scaling = 1.0 / h.Integral()
+        else:
+            scaling = 0.0
+            print "histogram", h.GetName(), "was empty"
+    h = h.Clone()
+    print scaling
+    h.Scale(scaling)    
+    h.Rebin(rebin)
     h.fillstyle = "hollow"
     b = rplt.bar(h, lw=0, color="none", ecolor=col, label=None, **kwargs)
     xs = []

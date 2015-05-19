@@ -88,13 +88,13 @@ tf.Write()
 tf.Close()
 
 
-####################################
-# Stack
-####################################
-fig = plt.figure(figsize=(8,8))
-ax1, ax2 = he.ratio_axes(fig)
-
-plt.sca(ax1)
-b1 = he.stackhist([h1, h2])
-plt.savefig("stack.png")
-plt.close()
+#####################################
+## Stack
+#####################################
+#fig = plt.figure(figsize=(8,8))
+#ax1, ax2 = he.ratio_axes(fig)
+#
+#plt.sca(ax1)
+#b1 = he.stackhist([h1, h2])
+#plt.savefig("stack.png")
+#plt.close()
