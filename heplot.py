@@ -10,7 +10,7 @@ import matplotlib.gridspec as gridspec
 import math
 from matplotlib.ticker import AutoMinorLocator
 
-matplotlib.rc('font', family='sans-serif') 
+#matplotlib.rc('font', family='sans-serif') 
 matplotlib.rc('font', serif='Arial') 
 matplotlib.rc('text', usetex='true') 
 matplotlib.rcParams.update({'font.size': 16})
@@ -65,6 +65,17 @@ def as_array(x):
     return arr#.sum(1).sum(1)
 
 def barhist(h, **kwargs):
+    """
+    Draws a ROOT TH1 histogram h as a pyplot line.
+
+    kwargs:
+        color,
+        lw,
+        fillstyle,
+        label,
+        scaling: number of "normed",
+        rebin: number
+    """
     col = kwargs.pop("color", "blue")
 
     #b = rplt.errorbar(h, xerr=False, color=col, mec=col, ms=0, ecolor=col, **kwargs)
@@ -82,7 +93,6 @@ def barhist(h, **kwargs):
             scaling = 0.0
             print "histogram", h.GetName(), "was empty"
     h = h.Clone()
-    print scaling
     h.Scale(scaling)    
     h.Rebin(rebin)
     h.fillstyle = "hollow"
